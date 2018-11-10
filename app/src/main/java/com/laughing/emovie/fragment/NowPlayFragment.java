@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.laughing.emovie.R;
 import com.laughing.emovie.adapter.MovieAdapter;
 import com.laughing.emovie.entity.NowPlayEntity;
+import com.laughing.emovie.utils.CustomLinearLayoutManager;
 import com.laughing.emovie.utils.GsonUtils;
 
 import org.xutils.common.Callback;
@@ -33,6 +35,8 @@ public class NowPlayFragment extends Fragment {
     private MovieAdapter movieAdapter;
     private View containerView;
     private int count = 10;
+    private String requestUrl, city;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,6 +45,7 @@ public class NowPlayFragment extends Fragment {
             mRecyclerView = (RecyclerView) containerView.findViewById(R.id.recyclerView);
             srl_layout = (SwipeRefreshLayout) containerView.findViewById(R.id.srl_layout);
             movieAdapter = new MovieAdapter(R.layout.list_item_card_small);
+
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             mRecyclerView.setAdapter(movieAdapter);
         }
@@ -51,13 +56,17 @@ public class NowPlayFragment extends Fragment {
                 getData(0);
             }
         });
-
         movieAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
             @Override
             public void onLoadMoreRequested() {
                 getData(1);
             }
         }, mRecyclerView);
+
+        Bundle bundle = getArguments();
+        requestUrl = bundle.getString("requestUrl");
+        city = bundle.getString("city");
+
         getData(0);
         return containerView;
     }
@@ -73,9 +82,10 @@ public class NowPlayFragment extends Fragment {
      *                 获取数据
      */
     private void getData(final int status) {
-        RequestParams params = new RequestParams("https://api.douban.com/v2/movie/in_theaters");
+        RequestParams params = new RequestParams(requestUrl);
 //        params.setSslSocketFactory(...); // 设置ssl
-        params.addQueryStringParameter("city", "深圳");
+        if (!TextUtils.isEmpty(city))
+            params.addQueryStringParameter("city", "深圳");
         if (status == 0)
             params.addQueryStringParameter("start", status + "");
         else

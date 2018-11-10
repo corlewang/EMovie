@@ -1,98 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="210dp">
-
-    <ImageView
-        android:id="@+id/iv_test"
         android:layout_width="match_parent"
         android:layout_height="210dp"
-        android:scaleType="centerCrop"
-        android:src="@mipmap/ad2" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="140dp"
         android:orientation="vertical">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/iv_test"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="210dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/ad2" />
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_now"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="正在热映"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tv_top"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="TOP250"
-                android:textColor="#cccccc"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+    <ScrollView
+        android:id="@+id/nsl_content"
+        android:paddingTop="140dp"
+        android:fillViewport="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tv_line"
-                android:layout_width="120dp"
-                android:layout_height="2dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:background="@color/white" />
-
-        </LinearLayout>
-
-        <android.support.v4.view.ViewPager
-            android:id="@+id/vp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp" />
+            android:orientation="vertical">
 
-        <!--<com.github.florent37.materialviewpager.MaterialViewPager-->
-        <!--android:id="@+id/materialViewPager"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:visibility="gone"-->
-        <!--app:viewpager_animatedHeaderImage="true"-->
-        <!--app:viewpager_color="@color/colorPrimary"-->
-        <!--app:viewpager_disableToolbar="false"-->
-        <!--app:viewpager_displayToolbarWhenSwipe="false"-->
-        <!--app:viewpager_enableToolbarElevation="false"-->
-        <!--app:viewpager_headerAdditionalHeight="20dp"-->
-        <!--app:viewpager_headerAlpha="0.8"-->
-        <!--app:viewpager_headerHeight="140dp"-->
-        <!--app:viewpager_hideLogoWithFade="false"-->
-        <!--app:viewpager_hideToolbarAndTitle="true"-->
-        <!--app:viewpager_logo="@layout/header_logo"-->
-        <!--app:viewpager_logoMarginTop="100dp"-->
-        <!--app:viewpager_parallaxHeaderFactor="0.2"-->
-        <!--app:viewpager_transparentToolbar="true" />-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
+                <TextView
+                    android:id="@+id/tv_now"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="正在热映"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/tv_top"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="TOP250"
+                    android:textColor="#cccccc"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_line"
+                    android:layout_width="120dp"
+                    android:layout_height="2dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:background="@color/white" />
+
+            </LinearLayout>
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/vp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp" />
+        </LinearLayout>
+
+    </ScrollView>
 </RelativeLayout>
 

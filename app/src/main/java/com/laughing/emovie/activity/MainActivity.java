@@ -2,25 +2,19 @@ package com.laughing.emovie.activity;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.laughing.emovie.R;
 import com.laughing.emovie.adapter.MyFragmentAdapter;
 import com.laughing.emovie.fragment.NowPlayFragment;
-import com.laughing.emovie.fragment.TopFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +26,13 @@ import java.util.List;
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private ViewPager mViewPager;
-    private NowPlayFragment nowPlayFragment;
+    private NowPlayFragment nowPlayFragment, topFragment;
     private MyFragmentAdapter myFragmentAdapter;
-    private TopFragment topFragment;
+    //    private TopFragment topFragment;
     private List<Fragment> mList;
     private TextView tv_line, tv_now, tv_top;
     private ImageView iv_test;
+    private ScrollView nsl_content;
 
     private int lineWidth = 0;
 
@@ -80,9 +75,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         tv_now.setOnClickListener(this);
         tv_top.setOnClickListener(this);
 
+        nsl_content = (ScrollView) findViewById(R.id.nsl_content);
         mViewPager = (ViewPager) findViewById(R.id.vp);
         nowPlayFragment = new NowPlayFragment();
-        topFragment = new TopFragment();
+        topFragment = new NowPlayFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putString("requestUrl", "https://api.douban.com/v2/movie/in_theaters");
+        bundle.putString("city", "深圳");
+        nowPlayFragment.setArguments(bundle);
+
+        Bundle bundle2 = new Bundle();
+        bundle2.putString("requestUrl", "https://api.douban.com/v2/movie/top250");
+        topFragment.setArguments(bundle2);
+
+//        "https://api.douban.com/v2/movie/in_theaters"
+//        "https://api.douban.com/v2/movie/top250"
+
+//        topFragment = new TopFragment();
 
         mList = new ArrayList<>();
         mList.add(nowPlayFragment);
