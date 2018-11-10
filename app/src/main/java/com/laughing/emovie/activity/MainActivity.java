@@ -9,7 +9,6 @@ import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.laughing.emovie.R;
@@ -28,11 +27,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private ViewPager mViewPager;
     private NowPlayFragment nowPlayFragment, topFragment;
     private MyFragmentAdapter myFragmentAdapter;
-    //    private TopFragment topFragment;
     private List<Fragment> mList;
     private TextView tv_line, tv_now, tv_top;
     private ImageView iv_test;
-    private ScrollView nsl_content;
+    private LinearLayout ll_content, ll_image;
+    private int setpIndex;
 
     private int lineWidth = 0;
 
@@ -42,10 +41,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.tv_now:
                 tv_now.setTextColor(Color.parseColor("#ffffff"));
                 tv_top.setTextColor(Color.parseColor("#cccccc"));
+                mViewPager.setCurrentItem(0, true);
+                tv_line.animate().translationX(0).setDuration(0);
                 break;
             case R.id.tv_top:
                 tv_now.setTextColor(Color.parseColor("#cccccc"));
                 tv_top.setTextColor(Color.parseColor("#ffffff"));
+                mViewPager.setCurrentItem(1, true);
+                tv_line.animate().translationX(setpIndex).setDuration(0);
                 break;
         }
     }
@@ -66,6 +69,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         params.leftMargin = 60;
         params.rightMargin = 60;
         tv_line.setLayoutParams(params);
+        setpIndex = getResources().getDisplayMetrics()
+                .widthPixels / mList.size();
     }
 
     private void initViewPager() {
@@ -75,23 +80,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         tv_now.setOnClickListener(this);
         tv_top.setOnClickListener(this);
 
-        nsl_content = (ScrollView) findViewById(R.id.nsl_content);
+        ll_image = (LinearLayout) findViewById(R.id.ll_image);
+        ll_content = (LinearLayout) findViewById(R.id.ll_content);
         mViewPager = (ViewPager) findViewById(R.id.vp);
         nowPlayFragment = new NowPlayFragment();
         topFragment = new NowPlayFragment();
 
         Bundle bundle = new Bundle();
-        bundle.putString("requestUrl", "https://api.douban.com/v2/movie/in_theaters");
-        bundle.putString("city", "深圳");
+        bundle.putString("key", "nowplaying");
         nowPlayFragment.setArguments(bundle);
 
         Bundle bundle2 = new Bundle();
-        bundle2.putString("requestUrl", "https://api.douban.com/v2/movie/top250");
+        bundle2.putString("key", "upcoming");
         topFragment.setArguments(bundle2);
 
 //        "https://api.douban.com/v2/movie/in_theaters"
 //        "https://api.douban.com/v2/movie/top250"
-
 //        topFragment = new TopFragment();
 
         mList = new ArrayList<>();
@@ -141,7 +145,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         iv_test.startAnimation(scaleAnimation);
 
     }
-
 
 }
 
