@@ -30,7 +30,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private List<Fragment> mList;
     private TextView tv_line, tv_now, tv_top;
     private ImageView iv_test;
-    private int setpIndex;
+    private int stepIndex;
 
     private int lineWidth = 0;
 
@@ -47,7 +47,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 tv_now.setTextColor(Color.parseColor("#cccccc"));
                 tv_top.setTextColor(Color.parseColor("#ffffff"));
                 mViewPager.setCurrentItem(1, true);
-                tv_line.animate().translationX(setpIndex).setDuration(0);
+                tv_line.animate().translationX(stepIndex).setDuration(0);
                 break;
         }
     }
@@ -68,7 +68,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         params.leftMargin = 60;
         params.rightMargin = 60;
         tv_line.setLayoutParams(params);
-        setpIndex = getResources().getDisplayMetrics()
+        stepIndex = getResources().getDisplayMetrics()
                 .widthPixels / mList.size();
     }
 
