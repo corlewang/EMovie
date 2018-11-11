@@ -49,20 +49,8 @@ public class NowPlayFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setAdapter(movieAdapter);
 
-//        mRecyclerView.setOnFlingListener(new RecyclerView.OnFlingListener() {
-//            @Override
-//            public boolean onFling(int velocityX, int velocityY) {
-//
-//                if (velocityY > 0) {
-//
-//                    Log.e("onFling: ", velocityY + "...");
-//                    return true;
-//                } else {
-//
-//                }
-//                return false;
-//            }
-//        });
+        mRecyclerView.setNestedScrollingEnabled(true);
+
 
         new GetDataThd().start();
         return containerView;

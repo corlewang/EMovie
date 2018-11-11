@@ -30,7 +30,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private List<Fragment> mList;
     private TextView tv_line, tv_now, tv_top;
     private ImageView iv_test;
-    private LinearLayout ll_content, ll_image;
     private int setpIndex;
 
     private int lineWidth = 0;
@@ -80,8 +79,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         tv_now.setOnClickListener(this);
         tv_top.setOnClickListener(this);
 
-        ll_image = (LinearLayout) findViewById(R.id.ll_image);
-        ll_content = (LinearLayout) findViewById(R.id.ll_content);
         mViewPager = (ViewPager) findViewById(R.id.vp);
         nowPlayFragment = new NowPlayFragment();
         topFragment = new NowPlayFragment();
