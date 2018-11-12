@@ -5,12 +5,15 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.laughing.emovie.R;
 import com.laughing.emovie.adapter.MyFragmentAdapter;
 import com.laughing.emovie.fragment.NowPlayFragment;
@@ -42,12 +45,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 tv_top.setTextColor(Color.parseColor("#cccccc"));
                 mViewPager.setCurrentItem(0, true);
                 tv_line.animate().translationX(0).setDuration(0);
+
+                select(0);
                 break;
             case R.id.tv_top:
                 tv_now.setTextColor(Color.parseColor("#cccccc"));
                 tv_top.setTextColor(Color.parseColor("#ffffff"));
                 mViewPager.setCurrentItem(1, true);
                 tv_line.animate().translationX(stepIndex).setDuration(0);
+
+                select(1);
                 break;
         }
     }
@@ -79,6 +86,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         tv_now.setOnClickListener(this);
         tv_top.setOnClickListener(this);
 
+        iv_test = (ImageView) findViewById(R.id.iv_test);
+
+        Glide.with(this).load(R.mipmap.ad2).animate(anim()).into(iv_test);
         mViewPager = (ViewPager) findViewById(R.id.vp);
         nowPlayFragment = new NowPlayFragment();
         topFragment = new NowPlayFragment();
@@ -118,11 +128,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         tv_now.setTextColor(Color.parseColor("#ffffff"));
                         tv_top.setTextColor(Color.parseColor("#cccccc"));
                         mViewPager.setCurrentItem(0, true);
+                        select(0);
                         break;
                     case 1:
                         tv_now.setTextColor(Color.parseColor("#cccccc"));
                         tv_top.setTextColor(Color.parseColor("#ffffff"));
                         mViewPager.setCurrentItem(1, true);
+                        select(1);
                         break;
                 }
             }
@@ -133,14 +145,34 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             }
         });
 
-        iv_test = (ImageView) findViewById(R.id.iv_test);
-        Animation scaleAnimation;
-        scaleAnimation = new ScaleAnimation(1, 1.3f, 1, 1.3f);
+
+    }
+
+    private void select(int index){
+        if (index==0){
+            iv_test.setImageResource(R.mipmap.ad2);
+            iv_test.setAnimation(anim());
+        }else {
+            iv_test.setImageResource(R.mipmap.ad1);
+            iv_test.setAnimation(anim());
+        }
+    }
+
+    private Animation anim() {
+        AnimationSet animationSet = new AnimationSet(true);
+
+        AlphaAnimation mShowAnimation = new AlphaAnimation(0.0f, 1.0f);
+        mShowAnimation.setDuration(1000);
+        mShowAnimation.setFillAfter(true);
+
+        ScaleAnimation scaleAnimation = new ScaleAnimation(1, 1.3f, 1, 1.3f);
         scaleAnimation.setDuration(20000);
         scaleAnimation.setRepeatCount(Integer.MAX_VALUE);
         scaleAnimation.setRepeatMode(Animation.REVERSE);
-        iv_test.startAnimation(scaleAnimation);
 
+        animationSet.addAnimation(mShowAnimation);
+        animationSet.addAnimation(scaleAnimation);
+        return animationSet;
     }
 
 }
