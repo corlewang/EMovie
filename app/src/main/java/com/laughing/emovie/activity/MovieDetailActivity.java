@@ -94,6 +94,12 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
+    }
+
+    @Override
     public void onBackPressed() {
         if (NiceVideoPlayerManager.instance().onBackPressd()) return;
         super.onBackPressed();
@@ -155,8 +161,13 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
             String date = str2.substring(0, str2.length() - 1);
             movieDetail.setDate(date);
 
-            String duc = str3.substring(0, str3.length() - 1);
-            movieDetail.setDuc(duc);
+            try {
+                String duc = str3.substring(0, str3.length() - 1);
+                movieDetail.setDuc(duc);
+            } catch (StringIndexOutOfBoundsException e) {
+                e.printStackTrace();
+                movieDetail.setDuc("未知");
+            }
 
             Element element = element1.getElementById("interest_sectl");
             Elements element4 = element.select("strong");
@@ -196,7 +207,7 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
                 movieDetail.setVideoUrl(elements3);
                 mHandler2.sendEmptyMessage(2);
             } else {
-                Toast.makeText(context, "暂无预告片", Toast.LENGTH_SHORT).show();
+                mHandler.sendEmptyMessageDelayed(2, 3000);
             }
 
             mHandler.sendEmptyMessageDelayed(1, 3000);
@@ -215,10 +226,17 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
             tv_type.setText("类型：" + movieDetail.getType());
             tv_date.setText("上映时间：" + movieDetail.getDate());
             tv_duc.setText("片长：" + movieDetail.getDuc());
-            tv_rating.setText(movieDetail.getRating());
-            ratingBar.setRating(Float.valueOf(movieDetail.getRating()) / 2);
-            tv_comm.setText(movieDetail.getComm() + "人评价");
+            if (!TextUtils.isEmpty(movieDetail.getRating())) {
+                tv_rating.setText(movieDetail.getRating());
+                ratingBar.setRating(Float.valueOf(movieDetail.getRating()) / 2);
+            }
+            tv_comm.setText(TextUtils.isEmpty(movieDetail.getComm()) ? "0人评价" : movieDetail.getComm() + "人评价");
             tv_info.setText(movieDetail.getInfo());
+
+            if (msg.what == 2) {
+                Toast.makeText(context, "暂无预告片", Toast.LENGTH_SHORT).show();
+            }
+
         }
     };
 
