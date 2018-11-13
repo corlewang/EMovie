@@ -68,6 +68,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
@@ -75,7 +76,6 @@
                         android:id="@+id/tv_type"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="类型：动作"
                         android:textColor="#666666"
                         android:textSize="14sp" />
 
@@ -83,8 +83,7 @@
                         android:id="@+id/tv_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="上映时间：2018年10月"
+                        android:layout_marginTop="7dp"
                         android:textColor="#666666"
                         android:textSize="15sp" />
 
@@ -92,8 +91,7 @@
                         android:id="@+id/tv_duc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="片长：动作"
+                        android:layout_marginTop="7dp"
                         android:textColor="#666666"
                         android:textSize="15sp" />
 
@@ -165,10 +163,14 @@
                 android:id="@+id/tv_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:paddingBottom="20dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:lineSpacingExtra="0.5dp"
+                android:lineSpacingMultiplier="2"
                 android:text=""
                 android:textColor="#666666"
-                android:textSize="15sp" />
+                android:textSize="16sp" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

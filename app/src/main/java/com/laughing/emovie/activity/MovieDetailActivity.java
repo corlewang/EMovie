@@ -123,10 +123,20 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
             Element element2 = element1.getElementById("info");
             Elements elements = element2.select("span");
 
+            Elements elements4 = element1.select("span");
+
+            for (Element ele : elements4) {
+                if (ele.attr("property").equals("v:itemreviewed")) {
+                    String name = ele.text();
+                    movieDetail.setName(name);
+                }
+            }
+
             StringBuilder str = new StringBuilder();
             StringBuilder str2 = new StringBuilder();
             StringBuilder str3 = new StringBuilder();
             for (Element element : elements) {
+
                 if (element.attr("property").equals("v:genre")) {
                     String type = element.text();
                     str.append(type + "/");
@@ -142,14 +152,14 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
                 }
             }
 
-            str.substring(0, str.length() - 1);
-            movieDetail.setType(str.toString());
+            String type = str.substring(0, str.length() - 1);
+            movieDetail.setType(type);
 
-            str2.substring(0, str2.length() - 1);
-            movieDetail.setDate(str2.toString());
+            String date = str2.substring(0, str2.length() - 1);
+            movieDetail.setDate(date);
 
-            str3.substring(0, str3.length() - 1);
-            movieDetail.setDuc(str3.toString());
+            String duc = str3.substring(0, str3.length() - 1);
+            movieDetail.setDuc(duc);
 
             Element element = element1.getElementById("interest_sectl");
             Elements element4 = element.select("strong");
@@ -163,7 +173,7 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
 
             for (Element ele : element5) {
                 if (ele.attr("property").equals("v:votes")) {
-                    movieDetail.setComm(ele.text() + "人评价");
+                    movieDetail.setComm(ele.text());
                 }
             }
             Elements element3 = element1.getElementsByClass("related-info").select("span");
@@ -179,13 +189,19 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
 
             String eleVideo = element6.getElementsByClass("related-pic-video").attr("href");
             movieDetail.setVideoContent(eleVideo);
-            Document document2 = Jsoup.connect
-                    (eleVideo).get();
-            Element element7 = document2.getElementById("movie_player");
-            String elements3 = element7.select("video").select("source").attr("src");
 
-            movieDetail.setVideoUrl(elements3);
-            mHandler2.sendEmptyMessage(2);
+            if (!TextUtils.isEmpty(eleVideo)) {
+                Document document2 = Jsoup.connect
+                        (eleVideo).get();
+                Element element7 = document2.getElementById("movie_player");
+                String elements3 = element7.select("video").select("source").attr("src");
+
+                movieDetail.setVideoUrl(elements3);
+                mHandler2.sendEmptyMessage(2);
+            } else {
+                Toast.makeText(context, "暂无预告片", Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
+            }
 
             mHandler.sendEmptyMessageDelayed(1, 3000);
         } catch (IOException e) {
@@ -199,6 +215,14 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             LoadingDialog.dismissDialog();
+            iv_name.setText(movieDetail.getName());
+            tv_type.setText("类型：" + movieDetail.getType());
+            tv_date.setText("上映时间：" + movieDetail.getDate());
+            tv_duc.setText("片长：" + movieDetail.getDuc());
+            tv_rating.setText(movieDetail.getRating());
+            ratingBar.setRating(Float.valueOf(movieDetail.getRating()) / 2);
+            tv_comm.setText(movieDetail.getComm() + "人评价");
+            tv_info.setText(movieDetail.getInfo());
         }
     };
 
