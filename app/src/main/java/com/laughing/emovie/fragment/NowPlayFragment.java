@@ -1,5 +1,6 @@
 package com.laughing.emovie.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,9 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.laughing.emovie.R;
+import com.laughing.emovie.activity.MovieDetailActivity;
 import com.laughing.emovie.adapter.MovieAdapter;
 import com.laughing.emovie.entity.NowPlayEntity;
+import com.laughing.emovie.widget.LoadingDialog;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -51,7 +55,15 @@ public class NowPlayFragment extends Fragment {
 
         mRecyclerView.setNestedScrollingEnabled(true);
 
+        movieAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                startActivity(new Intent().setClass(getActivity(), MovieDetailActivity.class)
+                        .putExtra("id", movieAdapter.getData().get(position).getId()));
+            }
+        });
 
+        LoadingDialog.getInstance(getActivity()).setMessage("加载中").show();
         new GetDataThd().start();
         return containerView;
     }
@@ -115,7 +127,7 @@ public class NowPlayFragment extends Fragment {
                         nowPlayEntity.setDirectors(director);
                         nowPlayEntity.setCasts(actors);
 
-                        if (!TextUtils.isEmpty(nowPlayEntity.getTitle()))
+                        if (!TextUtils.isEmpty(nowPlayEntity.getTitle()) || !TextUtils.isEmpty(nowPlayEntity.getId()))
                             mList.add(nowPlayEntity);
                     }
                 }
@@ -182,6 +194,7 @@ public class NowPlayFragment extends Fragment {
             super.handleMessage(msg);
             movieAdapter.getData().clear();
             movieAdapter.addData(mList);
+            LoadingDialog.dismissDialog();
         }
     };
 

@@ -1,32 +1,43 @@
 package com.laughing.emovie.activity;
 
-import android.content.res.Configuration;
-import android.database.ContentObserver;
+import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.provider.Settings;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.gyf.barlibrary.ImmersionBar;
+
 
 /**
  * Created by Wy on 2018/11/9.
  */
 
-public class BaseActivity extends FragmentActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setupImmersionBar();
+
+    public Context context;
+
+    protected abstract int getLayoutId();
+
+    protected void initView(Bundle savedInstanceState) {
+    }
+
+    protected void initData() {
+    }
+
+    protected <T extends View> T find(int id) {
+        return (T) super.findViewById(id);
     }
 
 
-    protected void setupImmersionBar() {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        context = this;
         ImmersionBar.with(this).init();
-//        this.immersionBar.fitsSystemWindows(true).statusBarColor(R.color.c222222).keyboardEnable(true, 32).init();
+        setContentView(getLayoutId());
+        initView(savedInstanceState);
+        initData();
     }
 
     @Override
@@ -35,11 +46,6 @@ public class BaseActivity extends FragmentActivity {
         ImmersionBar.with(this).destroy();
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        // 如果你的app可以横竖屏切换，并且适配4.4或者emui3手机请务必在onConfigurationChanged方法里添加这句话
-        ImmersionBar.with(this).init();
-    }
+
 }
 

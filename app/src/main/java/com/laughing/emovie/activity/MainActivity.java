@@ -60,9 +60,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    protected int getLayoutId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected void initView(Bundle savedInstanceState) {
+        super.initView(savedInstanceState);
         initViewPager();
     }
 
@@ -148,11 +152,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
-    private void select(int index){
-        if (index==0){
+    private void select(int index) {
+        if (index == 0) {
             iv_test.setImageResource(R.mipmap.ad2);
+
             iv_test.setAnimation(anim());
-        }else {
+        } else {
             iv_test.setImageResource(R.mipmap.ad1);
             iv_test.setAnimation(anim());
         }
