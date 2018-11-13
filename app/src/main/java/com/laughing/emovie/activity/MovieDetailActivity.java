@@ -40,8 +40,6 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
     private NiceVideoPlayer mNiceVideoPlayer;
     private TextView iv_name, tv_type, tv_date, tv_duc, tv_rating, tv_comm, tv_info;
     private RatingBar ratingBar;
-    private ProgressBar progressBar;
-
     private MovieDetail movieDetail;
 
     @Override
@@ -71,7 +69,6 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
         tv_comm = find(R.id.tv_comm);
         tv_info = find(R.id.tv_info);
         ratingBar = find(R.id.ratingBar);
-        progressBar = find(R.id.progressBar);
 
         find(R.id.iv_back).setOnClickListener(this);
         mNiceVideoPlayer = find(R.id.nice_video_player);
@@ -200,7 +197,6 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
                 mHandler2.sendEmptyMessage(2);
             } else {
                 Toast.makeText(context, "暂无预告片", Toast.LENGTH_SHORT).show();
-                progressBar.setVisibility(View.GONE);
             }
 
             mHandler.sendEmptyMessageDelayed(1, 3000);
@@ -231,7 +227,6 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            progressBar.setVisibility(View.GONE);
             mNiceVideoPlayer.setPlayerType(NiceVideoPlayer.TYPE_IJK); // IjkPlayer or MediaPlayer
             mNiceVideoPlayer.setUp(movieDetail.getVideoUrl(), null);
             TxVideoPlayerController controller = new TxVideoPlayerController(context);
