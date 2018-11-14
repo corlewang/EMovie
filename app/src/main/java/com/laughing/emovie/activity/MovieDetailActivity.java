@@ -46,7 +46,12 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
-                finish();
+                if (NiceVideoPlayerManager.instance().onBackPressd()) {
+                    return;
+                } else {
+                    NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
+                    finish();
+                }
                 break;
         }
     }
@@ -59,7 +64,7 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void initView(Bundle savedInstanceState) {
         super.initView(savedInstanceState);
-        ImmersionBar.with(this).fitsSystemWindows(true).statusBarColor(R.color.toolbar).init();
+        ImmersionBar.with(this).statusBarColor(R.color.toolbar).init();
         id = getIntent().getStringExtra("id");
         iv_name = find(R.id.iv_name);
         tv_type = find(R.id.tv_type);
@@ -85,24 +90,6 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
         } else {
             mNiceVideoPlayer.enterTinyWindow();
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (NiceVideoPlayerManager.instance().onBackPressd()) return;
-        super.onBackPressed();
     }
 
     private class GetDataThd extends Thread {
@@ -245,7 +232,7 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            mNiceVideoPlayer.setPlayerType(NiceVideoPlayer.TYPE_IJK); // IjkPlayer or MediaPlayer
+//            mNiceVideoPlayer.setPlayerType(NiceVideoPlayer.MODE_FULL_SCREEN); // IjkPlayer or MediaPlayer
             mNiceVideoPlayer.setUp(movieDetail.getVideoUrl(), null);
             TxVideoPlayerController controller = new TxVideoPlayerController(context);
             controller.setTitle("");
@@ -259,5 +246,23 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
 
         }
     };
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (NiceVideoPlayerManager.instance().onBackPressd()) {
+            return;
+        } else {
+            NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
+            finish();
+        }
+        super.onBackPressed();
+    }
 
 }

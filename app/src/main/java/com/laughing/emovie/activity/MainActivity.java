@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.laughing.emovie.R;
 import com.laughing.emovie.adapter.MyFragmentAdapter;
 import com.laughing.emovie.fragment.NowPlayFragment;
+import com.laughing.emovie.utils.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -178,6 +179,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         animationSet.addAnimation(mShowAnimation);
         animationSet.addAnimation(scaleAnimation);
         return animationSet;
+    }
+
+    @Override
+    public void onBackPressed() {
+        // TODO Auto-generated method stub
+        exitApp();
+    }
+
+    /**
+     * 记录返回键按下时间
+     */
+    private long exitTime = 0;
+
+    /**
+     * 返回键双击退出APP
+     */
+    private void exitApp() {
+        if ((System.currentTimeMillis() - exitTime) > 2000) {
+            ToastUtils.show(context, "再按一次退出程序");
+            exitTime = System.currentTimeMillis();
+        } else {
+            finish();
+        }
     }
 
 }
