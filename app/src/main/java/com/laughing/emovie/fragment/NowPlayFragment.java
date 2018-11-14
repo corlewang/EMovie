@@ -6,9 +6,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,39 +35,82 @@ import java.util.List;
 /**
  * Created by florentchampigny on 24/04/15.
  */
-public class NowPlayFragment extends Fragment {
+public class NowPlayFragment extends BaseFragment {
 
     private RecyclerView mRecyclerView;
     private MovieAdapter movieAdapter;
-    private View containerView;
-    private String key;
+    private String key, requestUrl;
     private List<NowPlayEntity> mList;
-
+    private SwipeRefreshLayout srl_content;
+    private boolean loadMore;
+    //是否是刷新操作
+    private boolean fresh;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        containerView = inflater.inflate(R.layout.fragment_recyclerview, null);
-        mRecyclerView = (RecyclerView) containerView.findViewById(R.id.recyclerView);
+    protected int getLayoutId() {
+        return R.layout.fragment_recyclerview;
+    }
 
+    @Override
+    protected void initView(View view, Bundle bundle) {
+        mRecyclerView = find(R.id.recyclerView);
+        srl_content = find(R.id.srl_content);
         mList = new ArrayList<>();
         movieAdapter = new MovieAdapter(R.layout.list_item_card_small);
-
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        final LinearLayoutManager manager = new LinearLayoutManager(context);
+        mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(movieAdapter);
 
-        mRecyclerView.setNestedScrollingEnabled(true);
+        loadMore = getArguments().getBoolean("more");
 
         movieAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 startActivity(new Intent().setClass(getActivity(), MovieDetailActivity.class)
-                        .putExtra("id", movieAdapter.getData().get(position).getId()));
+                        .putExtra("id", movieAdapter.getData().get(position).getId())
+                        .putExtra("type", loadMore));
             }
         });
+        if (loadMore) {
+            srl_content.setEnabled(true);
+            srl_content.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    fresh = true;
+                    new GetDataThd().start();
+                }
+            });
 
-        LoadingDialog.getInstance(getActivity()).setMessage("加载中").show();
+            movieAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
+                @Override
+                public void onLoadMoreRequested() {
+                    new GetDataThd().start();
+                }
+            });
+
+//            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//                @Override
+//                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//                    super.onScrollStateChanged(recyclerView, newState);
+//                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+//                        int lastVisiblePosition = manager.findLastVisibleItemPosition();
+//                        if (lastVisiblePosition >= manager.getItemCount() - 1) {
+//
+//                        }
+//                    }
+//                }
+//            });
+        } else {
+            srl_content.setEnabled(false);
+        }
+
+
+        if (!loadMore) {
+            LoadingDialog.getInstance(getActivity()).setMessage("加载中").show();
+        } else {
+            srl_content.setRefreshing(true);
+        }
         new GetDataThd().start();
-        return containerView;
     }
 
 
@@ -79,25 +124,27 @@ public class NowPlayFragment extends Fragment {
         @Override
         public void run() {
             super.run();
-            getData(0);
+            if (!loadMore) {
+                getData();
+            } else {
+                getTopData();
+            }
         }
 
     }
 
     /**
-     * @param status=0 刷新
-     *                 获取数据
+     * 获取数据
      */
-    private void getData(final int status) {
+    private void getData() {
         try {
-            Document document = Jsoup.connect
-                    ("https://movie.douban.com/cinema/nowplaying/shenzhen/").get();
-
             Bundle bundle = getArguments();
+            requestUrl = bundle.getString("url");
             key = bundle.getString("key");
             if (TextUtils.isEmpty(key))
                 return;
 
+            Document document = Jsoup.connect(requestUrl).get();
             Element element1 = document.getElementById(key);
             Elements elements = element1.getElementsByClass
                     ("mod-bd");
@@ -137,54 +184,62 @@ public class NowPlayFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    //针对top250 电影解析
+    private void getTopData() {
+        try {
+            Bundle bundle = getArguments();
+            requestUrl = bundle.getString("url");
+            loadMore = getArguments().getBoolean("more");
 
-//        RequestParams params = new RequestParams(requestUrl);
-////        params.setSslSocketFactory(...); // 设置ssl
-//        if (!TextUtils.isEmpty(city))
-//            params.addQueryStringParameter("city", "深圳");
-//        if (status == 0)
-//            params.addQueryStringParameter("start", status + "");
-//        else
-//            params.addQueryStringParameter("start", movieAdapter.getData().size() + "");
-//
-//        params.addQueryStringParameter("count", count + "");
-//
-//        Log.e("params: ", params.toString());
-//        x.http().get(params, new Callback.CommonCallback<String>() {
-//            @Override
-//            public void onSuccess(String result) {
-//                NowPlayEntity nowPlay = GsonUtils.fromJson(result, NowPlayEntity.class);
-//
-//                if (status == 0) {
-//                    movieAdapter.getData().clear();
-//                } else {
-//                    if (nowPlay.getSubjects().size() == 0) {
-//                        movieAdapter.loadMoreEnd(false);
-//                    } else {
-//                        movieAdapter.loadMoreComplete();
-//                    }
-//                }
-//
-//                movieAdapter.addData(nowPlay.getSubjects());
-//                movieAdapter.notifyDataSetChanged();
-//            }
-//
-//            @Override
-//            public void onError(Throwable ex, boolean isOnCallback) {
-//                Toast.makeText(x.app(), ex.getMessage(), Toast.LENGTH_LONG).show();
-//            }
-//
-//            @Override
-//            public void onCancelled(CancelledException cex) {
-//                Toast.makeText(x.app(), "cancelled", Toast.LENGTH_LONG).show();
-//            }
-//
-//            @Override
-//            public void onFinished() {
-//                srl_layout.setRefreshing(false);
-//            }
-//        });
+            if (loadMore) {
+                requestUrl = requestUrl + "?start=" + mList.size();
+
+                Log.e("requestUrl=== ", requestUrl);
+            }
+
+            Document document = Jsoup.connect(requestUrl).get();
+            Element element4 = document.getElementById("content");
+            Elements element5 = element4.getElementsByClass("grid_view").select("li");
+
+            for (Element element : element5) {
+                NowPlayEntity nowPlayEntity = new NowPlayEntity();
+                String id = element.getElementsByClass("hd").select("a").attr("href");
+                nowPlayEntity.setId(id);
+                Elements ele2 = element.getElementsByClass("pic");
+
+                String name = ele2.select("a").select("img").attr("alt");
+                String img = ele2.select("a").select("img").attr("src");
+
+                nowPlayEntity.setTitle(name);
+                nowPlayEntity.setImages(img);
+
+                Elements elements = element.getElementsByClass("info");
+                for (Element element2 : elements) {
+                    Elements elements1 = element2.select("div").select("p");
+                    for (Element element3 : elements1) {
+                        if (!element3.attr("class").equals("quote")) {
+                            String dic = element3.outerHtml().toString();
+                            nowPlayEntity.setDirectors(dic);
+                        }
+                    }
+                    Elements elements2 = element2.getElementsByClass("star").select("span");
+                    for (Element ele3 : elements2) {
+                        if (ele3.attr("property").equals("v:average")) {
+                            String star = ele3.text();
+                            nowPlayEntity.setRating(star);
+                        }
+                    }
+                    if (!TextUtils.isEmpty(nowPlayEntity.getTitle()) || !TextUtils.isEmpty(nowPlayEntity.getId()))
+                        mList.add(nowPlayEntity);
+                }
+            }
+
+            mHandler.sendEmptyMessageDelayed(1, 2000);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private Handler mHandler = new Handler() {
@@ -192,6 +247,18 @@ public class NowPlayFragment extends Fragment {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            srl_content.setRefreshing(false);
+
+            if (fresh) {
+                mList.clear();
+            } else {
+                if (mList.size() != 0) {
+                    movieAdapter.loadMoreComplete();
+                } else {
+                    movieAdapter.loadMoreEnd(false);
+                }
+            }
+
             movieAdapter.getData().clear();
             movieAdapter.addData(mList);
             LoadingDialog.dismissDialog();

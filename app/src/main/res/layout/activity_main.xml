@@ -60,12 +60,23 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tv_top"
+                    android:id="@+id/tv_coming"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="即将上映"
+                    android:textColor="#cccccc"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_top"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Top250"
                     android:textColor="#cccccc"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -78,10 +89,10 @@
 
                 <TextView
                     android:id="@+id/tv_line"
-                    android:layout_width="120dp"
+                    android:layout_width="76dp"
                     android:layout_height="2dp"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="30dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
                     android:background="@color/white" />
             </LinearLayout>
         </LinearLayout>

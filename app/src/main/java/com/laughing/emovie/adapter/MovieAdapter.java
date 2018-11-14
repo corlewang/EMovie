@@ -1,6 +1,7 @@
 package com.laughing.emovie.adapter;
 
 import android.support.annotation.LayoutRes;
+import android.text.Html;
 import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -33,7 +34,7 @@ public class MovieAdapter extends BaseQuickAdapter<NowPlayEntity, BaseViewHolder
 
         Glide.with(mContext).load(item.getImages()).into(iv_img);
         tv_name.setText(item.getTitle());
-        tv_dy.setText(item.getDirectors());
+        tv_dy.setText(Html.fromHtml(item.getDirectors()));
 
         if (!TextUtils.isEmpty(item.getRating())) {
             ratingBar.setRating(Float.valueOf(item.getRating()) / 2);

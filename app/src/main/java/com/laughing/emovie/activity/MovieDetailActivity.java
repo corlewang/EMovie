@@ -36,11 +36,12 @@ import java.io.IOException;
 
 public class MovieDetailActivity extends BaseActivity implements View.OnClickListener {
 
-    private String id;
+    private String id, requestUrl;
     private NiceVideoPlayer mNiceVideoPlayer;
     private TextView iv_name, tv_type, tv_date, tv_duc, tv_rating, tv_comm, tv_info;
     private RatingBar ratingBar;
     private MovieDetail movieDetail;
+    private boolean type;
 
     @Override
     public void onClick(View view) {
@@ -65,6 +66,8 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
     protected void initView(Bundle savedInstanceState) {
         super.initView(savedInstanceState);
         ImmersionBar.with(this).statusBarColor(R.color.toolbar).init();
+
+        type = getIntent().getBooleanExtra("type", false);
         id = getIntent().getStringExtra("id");
         iv_name = find(R.id.iv_name);
         tv_type = find(R.id.tv_type);
@@ -78,6 +81,12 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
         find(R.id.iv_back).setOnClickListener(this);
         mNiceVideoPlayer = find(R.id.nice_video_player);
         movieDetail = new MovieDetail();
+
+        if (type) {
+            requestUrl = id;
+        } else {
+            requestUrl = "https://movie.douban.com/subject/" + id;
+        }
 
         LoadingDialog.getInstance(context).setMessage("加载中").show();
         new GetDataThd().start();
@@ -106,99 +115,193 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
      */
     private void getData() {
         try {
-            Document document = Jsoup.connect
-                    ("https://movie.douban.com/subject/" + id).get();
+            Document document = Jsoup.connect(requestUrl).get();
 
             Element element1 = document.getElementById("content");
-            Element element2 = element1.getElementById("info");
-            Elements elements = element2.select("span");
-
-            Elements elements4 = element1.select("span");
-
-            for (Element ele : elements4) {
-                if (ele.attr("property").equals("v:itemreviewed")) {
-                    String name = ele.text();
-                    movieDetail.setName(name);
-                }
-            }
-
-            StringBuilder str = new StringBuilder();
-            StringBuilder str2 = new StringBuilder();
-            StringBuilder str3 = new StringBuilder();
-            for (Element element : elements) {
-
-                if (element.attr("property").equals("v:genre")) {
-                    String type = element.text();
-                    str.append(type + "/");
+            if (type) {
+                Elements elements = element1.select("h1");
+                if (elements.get(0).select("span").attr("property").equals("v:itemreviewed")) {
+                    movieDetail.setName(elements.get(0).select("span").text());
                 }
 
-                if (element.attr("property").equals("v:initialReleaseDate")) {
-                    String date = element.attr("content");
-                    str2.append(date + "/");
+                Element element2 = element1.getElementById("info");
+                Elements elements2 = element2.select("span");
+
+                StringBuilder str = new StringBuilder();
+                StringBuilder str2 = new StringBuilder();
+                StringBuilder str3 = new StringBuilder();
+                for (Element element : elements2) {
+
+                    if (element.attr("property").equals("v:genre")) {
+                        String type = element.text();
+                        str.append(type + "/");
+                    }
+
+                    if (element.attr("property").equals("v:initialReleaseDate")) {
+                        String date = element.attr("content");
+                        str2.append(date + "/");
+                    }
+
+                    if (element.attr("property").equals("v:runtime")) {
+                        str3.append(element.text() + "/");
+                    }
                 }
 
-                if (element.attr("property").equals("v:runtime")) {
-                    str3.append(element.text() + "/");
+                String type = str.substring(0, str.length() - 1);
+                movieDetail.setType(type);
+
+                String date = str2.substring(0, str2.length() - 1);
+                movieDetail.setDate(date);
+
+                try {
+                    String duc = str3.substring(0, str3.length() - 1);
+                    movieDetail.setDuc(duc);
+                } catch (StringIndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                    movieDetail.setDuc("未知");
                 }
-            }
 
-            String type = str.substring(0, str.length() - 1);
-            movieDetail.setType(type);
+                Element element = element1.getElementById("interest_sectl");
+                Elements element4 = element.select("strong");
+                Elements element5 = element.getElementsByClass("rating_people").select("span");
 
-            String date = str2.substring(0, str2.length() - 1);
-            movieDetail.setDate(date);
-
-            try {
-                String duc = str3.substring(0, str3.length() - 1);
-                movieDetail.setDuc(duc);
-            } catch (StringIndexOutOfBoundsException e) {
-                e.printStackTrace();
-                movieDetail.setDuc("未知");
-            }
-
-            Element element = element1.getElementById("interest_sectl");
-            Elements element4 = element.select("strong");
-            Elements element5 = element.getElementsByClass("rating_people").select("span");
-
-            for (Element ele : element4) {
-                if (ele.attr("property").equals("v:average")) {
-                    movieDetail.setRating(ele.text());
+                for (Element ele : element4) {
+                    if (ele.attr("property").equals("v:average")) {
+                        movieDetail.setRating(ele.text());
+                    }
                 }
-            }
 
-            for (Element ele : element5) {
-                if (ele.attr("property").equals("v:votes")) {
-                    movieDetail.setComm(ele.text());
+                for (Element ele : element5) {
+                    if (ele.attr("property").equals("v:votes")) {
+                        movieDetail.setComm(ele.text());
+                    }
                 }
-            }
-            Elements element3 = element1.getElementsByClass("related-info").select("span");
-            for (Element ele : element3) {
-                if (ele.attr("property").equals("v:summary")) {
-                    movieDetail.setInfo(ele.text());
+                Elements element3 = element1.getElementsByClass("related-info").select("span");
+                for (Element ele : element3) {
+                    if (ele.attr("property").equals("v:summary")) {
+                        movieDetail.setInfo(ele.text());
+                    }
                 }
-            }
 
-            Element element6 = element1.getElementById("related-pic");
-            String eleImg = element6.getElementsByClass("related-pic-video").attr("style");
-            movieDetail.setVideoImg(eleImg);
+                Element element6 = element1.getElementById("related-pic");
+                String eleImg = element6.getElementsByClass("related-pic-video").attr("style");
+                try {
+                    eleImg = eleImg.substring(eleImg.lastIndexOf("(") + 1, eleImg.indexOf(")"));
+                } catch (StringIndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                }
+                movieDetail.setVideoImg(eleImg);
 
-            String eleVideo = element6.getElementsByClass("related-pic-video").attr("href");
-            movieDetail.setVideoContent(eleVideo);
+                String eleVideo = element6.getElementsByClass("related-pic-video").attr("href");
+                movieDetail.setVideoContent(eleVideo);
 
-            if (!TextUtils.isEmpty(eleVideo)) {
-                Document document2 = Jsoup.connect
-                        (eleVideo).get();
-                Element element7 = document2.getElementById("movie_player");
-                String elements3 = element7.select("video").select("source").attr("src");
+                if (!TextUtils.isEmpty(eleVideo)) {
+                    Document document2 = Jsoup.connect
+                            (eleVideo).get();
+                    Element element7 = document2.getElementById("movie_player");
+                    String elements3 = element7.select("video").select("source").attr("src");
 
-                movieDetail.setVideoUrl(elements3);
-                mHandler2.sendEmptyMessage(2);
+                    movieDetail.setVideoUrl(elements3);
+                    mHandler2.sendEmptyMessage(2);
+                } else {
+                    mHandler.sendEmptyMessageDelayed(2, 3000);
+                }
+
             } else {
-                mHandler.sendEmptyMessageDelayed(2, 3000);
-            }
+                Element element2 = element1.getElementById("info");
+                Elements elements = element2.select("span");
+                Elements elements4 = element1.select("span");
 
+                for (Element ele : elements4) {
+                    if (ele.attr("property").equals("v:itemreviewed")) {
+                        String name = ele.text();
+                        movieDetail.setName(name);
+                    }
+                }
+
+                StringBuilder str = new StringBuilder();
+                StringBuilder str2 = new StringBuilder();
+                StringBuilder str3 = new StringBuilder();
+                for (Element element : elements) {
+
+                    if (element.attr("property").equals("v:genre")) {
+                        String type = element.text();
+                        str.append(type + "/");
+                    }
+
+                    if (element.attr("property").equals("v:initialReleaseDate")) {
+                        String date = element.attr("content");
+                        str2.append(date + "/");
+                    }
+
+                    if (element.attr("property").equals("v:runtime")) {
+                        str3.append(element.text() + "/");
+                    }
+                }
+
+                String type = str.substring(0, str.length() - 1);
+                movieDetail.setType(type);
+
+                String date = str2.substring(0, str2.length() - 1);
+                movieDetail.setDate(date);
+
+                try {
+                    String duc = str3.substring(0, str3.length() - 1);
+                    movieDetail.setDuc(duc);
+                } catch (StringIndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                    movieDetail.setDuc("未知");
+                }
+
+                Element element = element1.getElementById("interest_sectl");
+                Elements element4 = element.select("strong");
+                Elements element5 = element.getElementsByClass("rating_people").select("span");
+
+                for (Element ele : element4) {
+                    if (ele.attr("property").equals("v:average")) {
+                        movieDetail.setRating(ele.text());
+                    }
+                }
+
+                for (Element ele : element5) {
+                    if (ele.attr("property").equals("v:votes")) {
+                        movieDetail.setComm(ele.text());
+                    }
+                }
+                Elements element3 = element1.getElementsByClass("related-info").select("span");
+                for (Element ele : element3) {
+                    if (ele.attr("property").equals("v:summary")) {
+                        movieDetail.setInfo(ele.text());
+                    }
+                }
+
+                Element element6 = element1.getElementById("related-pic");
+                String eleImg = element6.getElementsByClass("related-pic-video").attr("style");
+                try {
+                    eleImg = eleImg.substring(eleImg.lastIndexOf("(") + 1, eleImg.indexOf(")"));
+                } catch (StringIndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                }
+                movieDetail.setVideoImg(eleImg);
+
+                String eleVideo = element6.getElementsByClass("related-pic-video").attr("href");
+                movieDetail.setVideoContent(eleVideo);
+
+                if (!TextUtils.isEmpty(eleVideo)) {
+                    Document document2 = Jsoup.connect
+                            (eleVideo).get();
+                    Element element7 = document2.getElementById("movie_player");
+                    String elements3 = element7.select("video").select("source").attr("src");
+
+                    movieDetail.setVideoUrl(elements3);
+                    mHandler2.sendEmptyMessage(2);
+                } else {
+                    mHandler.sendEmptyMessageDelayed(2, 3000);
+                }
+            }
             mHandler.sendEmptyMessageDelayed(1, 3000);
         } catch (IOException e) {
+            LoadingDialog.dismissDialog();
             e.printStackTrace();
         }
     }
