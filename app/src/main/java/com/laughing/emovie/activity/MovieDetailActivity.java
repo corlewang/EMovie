@@ -117,6 +117,8 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
         try {
             Document document = Jsoup.connect(requestUrl).get();
 
+            Log.e("getData: ", requestUrl + "...");
+
             Element element1 = document.getElementById("content");
             if (type) {
                 Elements elements = element1.select("h1");
@@ -301,8 +303,8 @@ public class MovieDetailActivity extends BaseActivity implements View.OnClickLis
             }
             mHandler.sendEmptyMessageDelayed(1, 3000);
         } catch (IOException e) {
-            LoadingDialog.dismissDialog();
             e.printStackTrace();
+            LoadingDialog.dismissDialog();
         }
     }
 
