@@ -1,4 +1,4 @@
-package com.laughing.emovie.utils;
+package com.laughing.emovie.widget;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -15,7 +15,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.laughing.emovie.R;
-import com.laughing.emovie.widget.SwipeCaptchaView;
 
 import java.util.Random;
 

@@ -20,9 +20,9 @@ import com.bumptech.glide.Glide;
 import com.laughing.emovie.R;
 import com.laughing.emovie.adapter.MyFragmentAdapter;
 import com.laughing.emovie.fragment.NowPlayFragment;
-import com.laughing.emovie.utils.CaptchaPop;
 import com.laughing.emovie.utils.ToastUtils;
 import com.laughing.emovie.utils.ViewHelper;
+import com.laughing.emovie.widget.CaptchaPop;
 import com.laughing.emovie.widget.SwipeCaptchaView;
 
 import java.util.ArrayList;
