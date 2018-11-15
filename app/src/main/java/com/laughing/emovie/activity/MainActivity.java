@@ -141,8 +141,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             @Override
             public void run() {
                 CaptchaPop captchaPop = new CaptchaPop(MainActivity.this);
-                if (captchaPop != null)
-                    captchaPop.showAtLocation(iv_test, Gravity.CENTER, 0, 0);
+                captchaPop.showAtLocation(iv_test, Gravity.CENTER, 0, 0);
                 captchaPop.setCaptchaCallBack(new SwipeCaptchaView.OnCaptchaMatchCallback() {
                     @Override
                     public void matchSuccess(SwipeCaptchaView swipeCaptchaView) {
@@ -152,48 +151,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
                         myFragmentAdapter = new MyFragmentAdapter(getSupportFragmentManager(), mList);
                         mViewPager.setAdapter(myFragmentAdapter);
-
-                        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                            @Override
-                            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-                                float tagerX = position * lineWidth + positionOffsetPixels / mList.size();
-                                tv_line.animate().translationX(tagerX)
-                                        .setDuration(0);
-                            }
-
-                            @Override
-                            public void onPageSelected(int position) {
-                                switch (position) {
-                                    case 0:
-                                        tv_now.setTextColor(Color.parseColor("#ffffff"));
-                                        tv_coming.setTextColor(Color.parseColor("#cccccc"));
-                                        tv_top.setTextColor(Color.parseColor("#cccccc"));
-                                        mViewPager.setCurrentItem(0, false);
-                                        select(0);
-                                        break;
-                                    case 1:
-                                        tv_now.setTextColor(Color.parseColor("#cccccc"));
-                                        tv_coming.setTextColor(Color.parseColor("#ffffff"));
-                                        tv_top.setTextColor(Color.parseColor("#cccccc"));
-                                        mViewPager.setCurrentItem(1, false);
-                                        select(1);
-                                        break;
-                                    case 2:
-                                        tv_now.setTextColor(Color.parseColor("#cccccc"));
-                                        tv_coming.setTextColor(Color.parseColor("#cccccc"));
-                                        tv_top.setTextColor(Color.parseColor("#ffffff"));
-                                        mViewPager.setCurrentItem(2, false);
-                                        select(2);
-                                        break;
-                                }
-                            }
-
-                            @Override
-                            public void onPageScrollStateChanged(int state) {
-
-                            }
-                        });
                     }
 
                     @Override
@@ -205,6 +162,48 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 });
             }
         }, 1000);
+
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                float tagerX = position * lineWidth + positionOffsetPixels / mList.size();
+                tv_line.animate().translationX(tagerX)
+                        .setDuration(0);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                switch (position) {
+                    case 0:
+                        tv_now.setTextColor(Color.parseColor("#ffffff"));
+                        tv_coming.setTextColor(Color.parseColor("#cccccc"));
+                        tv_top.setTextColor(Color.parseColor("#cccccc"));
+                        mViewPager.setCurrentItem(0, false);
+                        select(0);
+                        break;
+                    case 1:
+                        tv_now.setTextColor(Color.parseColor("#cccccc"));
+                        tv_coming.setTextColor(Color.parseColor("#ffffff"));
+                        tv_top.setTextColor(Color.parseColor("#cccccc"));
+                        mViewPager.setCurrentItem(1, false);
+                        select(1);
+                        break;
+                    case 2:
+                        tv_now.setTextColor(Color.parseColor("#cccccc"));
+                        tv_coming.setTextColor(Color.parseColor("#cccccc"));
+                        tv_top.setTextColor(Color.parseColor("#ffffff"));
+                        mViewPager.setCurrentItem(2, false);
+                        select(2);
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     private Handler mHandler = new Handler() {
