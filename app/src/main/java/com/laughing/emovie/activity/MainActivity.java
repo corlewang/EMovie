@@ -2,8 +2,11 @@ package com.laughing.emovie.activity;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.view.Gravity;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -17,8 +20,10 @@ import com.bumptech.glide.Glide;
 import com.laughing.emovie.R;
 import com.laughing.emovie.adapter.MyFragmentAdapter;
 import com.laughing.emovie.fragment.NowPlayFragment;
+import com.laughing.emovie.utils.CaptchaPop;
 import com.laughing.emovie.utils.ToastUtils;
 import com.laughing.emovie.utils.ViewHelper;
+import com.laughing.emovie.widget.SwipeCaptchaView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,53 +137,83 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mList.add(comingFragment);
         mList.add(topFragment);
 
-        myFragmentAdapter = new MyFragmentAdapter(getSupportFragmentManager(), mList);
-        mViewPager.setAdapter(myFragmentAdapter);
-
-        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mHandler.postDelayed(new Runnable() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            public void run() {
+                CaptchaPop captchaPop = new CaptchaPop(MainActivity.this);
+                if (captchaPop != null)
+                    captchaPop.showAtLocation(iv_test, Gravity.CENTER, 0, 0);
+                captchaPop.setCaptchaCallBack(new SwipeCaptchaView.OnCaptchaMatchCallback() {
+                    @Override
+                    public void matchSuccess(SwipeCaptchaView swipeCaptchaView) {
+                        Message msg = new Message();
+                        msg.obj = "验证成功！";
+                        mHandler.sendMessage(msg);
 
-                float tagerX = position * lineWidth + positionOffsetPixels / mList.size();
-                tv_line.animate().translationX(tagerX)
-                        .setDuration(0);
+                        myFragmentAdapter = new MyFragmentAdapter(getSupportFragmentManager(), mList);
+                        mViewPager.setAdapter(myFragmentAdapter);
+
+                        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                            @Override
+                            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                                float tagerX = position * lineWidth + positionOffsetPixels / mList.size();
+                                tv_line.animate().translationX(tagerX)
+                                        .setDuration(0);
+                            }
+
+                            @Override
+                            public void onPageSelected(int position) {
+                                switch (position) {
+                                    case 0:
+                                        tv_now.setTextColor(Color.parseColor("#ffffff"));
+                                        tv_coming.setTextColor(Color.parseColor("#cccccc"));
+                                        tv_top.setTextColor(Color.parseColor("#cccccc"));
+                                        mViewPager.setCurrentItem(0, false);
+                                        select(0);
+                                        break;
+                                    case 1:
+                                        tv_now.setTextColor(Color.parseColor("#cccccc"));
+                                        tv_coming.setTextColor(Color.parseColor("#ffffff"));
+                                        tv_top.setTextColor(Color.parseColor("#cccccc"));
+                                        mViewPager.setCurrentItem(1, false);
+                                        select(1);
+                                        break;
+                                    case 2:
+                                        tv_now.setTextColor(Color.parseColor("#cccccc"));
+                                        tv_coming.setTextColor(Color.parseColor("#cccccc"));
+                                        tv_top.setTextColor(Color.parseColor("#ffffff"));
+                                        mViewPager.setCurrentItem(2, false);
+                                        select(2);
+                                        break;
+                                }
+                            }
+
+                            @Override
+                            public void onPageScrollStateChanged(int state) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void matchFailed(SwipeCaptchaView swipeCaptchaView) {
+                        Message msg = new Message();
+                        msg.obj = "验证失败！";
+                        mHandler.sendMessage(msg);
+                    }
+                });
             }
-
-            @Override
-            public void onPageSelected(int position) {
-                switch (position) {
-                    case 0:
-                        tv_now.setTextColor(Color.parseColor("#ffffff"));
-                        tv_coming.setTextColor(Color.parseColor("#cccccc"));
-                        tv_top.setTextColor(Color.parseColor("#cccccc"));
-                        mViewPager.setCurrentItem(0, false);
-                        select(0);
-                        break;
-                    case 1:
-                        tv_now.setTextColor(Color.parseColor("#cccccc"));
-                        tv_coming.setTextColor(Color.parseColor("#ffffff"));
-                        tv_top.setTextColor(Color.parseColor("#cccccc"));
-                        mViewPager.setCurrentItem(1, false);
-                        select(1);
-                        break;
-                    case 2:
-                        tv_now.setTextColor(Color.parseColor("#cccccc"));
-                        tv_coming.setTextColor(Color.parseColor("#cccccc"));
-                        tv_top.setTextColor(Color.parseColor("#ffffff"));
-                        mViewPager.setCurrentItem(2, false);
-                        select(2);
-                        break;
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
-
+        }, 1000);
     }
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            ToastUtils.show(context, msg.obj.toString());
+        }
+    };
 
     private void select(int index) {
         if (index == 0) {

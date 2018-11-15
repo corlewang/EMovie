@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00000000"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_white"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="260dp"
+                android:layout_height="170dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp">
+
+                <com.laughing.emovie.widget.SwipeCaptchaView
+                    android:id="@+id/swipeCaptchaView"
+                    android:layout_width="260dp"
+                    android:layout_height="170dp"
+                    android:layout_centerHorizontal="true"
+                    android:scaleType="centerCrop"
+                    app:captchaHeight="30dp"
+                    app:captchaWidth="30dp"
+                    app:matchDeviation="7dp" />
+
+                <ImageView
+                    android:id="@+id/iv_fresh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:padding="5dp"
+                    android:scaleType="centerInside"
+                    android:src="@mipmap/ic_refresh" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/swipeCaptchaView">
+
+                <TextView
+                    android:id="@+id/tv_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="向右拖动滑块填充拼图"
+                    android:textColor="#333333"
+                    android:textSize="13sp" />
+
+                <SeekBar
+                    android:id="@+id/dragBar"
+                    style="@style/CustomSeekbarStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:splitTrack="false" />
+
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
